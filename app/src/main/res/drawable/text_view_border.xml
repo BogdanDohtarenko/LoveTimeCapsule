@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Устанавливаем закругленные углы (опционально) -->
+    <corners android:radius="8dp" />
+
+    <!-- Устанавливаем обводку -->
+    <stroke
+        android:width="3dp"
+        android:color="?attr/colorPrimary" /> <!-- Цвет из темы -->
+
+    <!-- Устанавливаем цвет фона (если нужно) -->
+    <solid android:color="@android:color/white" />
+</shape>
