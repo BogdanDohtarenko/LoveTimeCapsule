@@ -8,6 +8,7 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.ViewModelProvider
 import com.ideasapp.lovetimecapsule.R
 import com.ideasapp.lovetimecapsule.databinding.ActivityMainBinding
+import androidx.navigation.fragment.findNavController
 
 class MainActivity : AppCompatActivity() {
 
@@ -19,5 +20,26 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         enableEdgeToEdge()
         setContentView(R.layout.activity_main)
+    }
+
+    private fun launchAddFragment() {
+        supportFragmentManager.beginTransaction()
+            .add(R.id.main_container,  AddCapsuleFragment())
+            .addToBackStack(null)
+            .commit()
+    }
+
+    private fun launchListFragment() {
+        supportFragmentManager.beginTransaction()
+            .add(R.id.addCapsuleFragment,  ListCapsuleFragment())
+            .addToBackStack(null)
+            .commit()
+    }
+
+    private fun launchShowFragment() {
+        supportFragmentManager.beginTransaction()
+            .add(R.id.addCapsuleFragment,  ShowCapsuleFragment())
+            .addToBackStack(null)
+            .commit()
     }
 }
