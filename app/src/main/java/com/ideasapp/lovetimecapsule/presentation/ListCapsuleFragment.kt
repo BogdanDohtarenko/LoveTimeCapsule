@@ -20,7 +20,7 @@ class ListCapsuleFragment : Fragment() {
         get() = _binding ?: throw RuntimeException("FragmentChooseLevelBinding don't allow here")
 
     private val viewModel by lazy {
-        ViewModelProvider(this)[MainViewModel::class.java]
+        ViewModelProvider(requireActivity())[MainViewModel::class.java]
     }
 
     override fun onCreate(savedInstanceState:Bundle?) {

@@ -16,7 +16,7 @@ class AddCapsuleFragment: Fragment() {
         get() = _binding ?: throw RuntimeException("FragmentChooseLevelBinding don't allow here")
 
     private val viewModel by lazy {
-        ViewModelProvider(this)[MainViewModel::class.java]
+        ViewModelProvider(requireActivity())[MainViewModel::class.java]
     }
 
     override fun onCreate(savedInstanceState:Bundle?) {
@@ -31,6 +31,14 @@ class AddCapsuleFragment: Fragment() {
     ):View {
         _binding = AddCapsuleFragmentBinding.inflate(inflater, container, false)
         return binding.root
+    }
+
+    override fun onViewCreated(view:View,savedInstanceState:Bundle?) {
+        super.onViewCreated(view,savedInstanceState)
+        //TODO
+        val year =  binding.datePicker.year
+        val month =  binding.datePicker.month
+        val day =  binding.datePicker.dayOfMonth
     }
 
     override fun onDestroyView() {
