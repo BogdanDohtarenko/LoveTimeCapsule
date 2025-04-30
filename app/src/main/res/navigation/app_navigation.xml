@@ -1,40 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/app_navigation"
-    app:startDestination="@id/addCapsuleFragment">
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/nav_capsule_list">
 
+    <!-- Capsule List Fragment -->
     <fragment
-        android:id="@+id/addCapsuleFragment"
-        android:name="com.ideasapp.lovetimecapsule.presentation.AddCapsuleFragment"
-        android:label="AddCapsuleFragment" >
-        <action
-            android:id="@+id/action_addCapsuleFragment_to_listCapsuleFragment"
-            app:destination="@id/listCapsuleFragment" />
-        <action
-            android:id="@+id/action_addCapsuleFragment_to_showCapsuleFragment"
-            app:destination="@id/showCapsuleFragment" />
-    </fragment>
-    <fragment
-        android:id="@+id/listCapsuleFragment"
+        android:id="@+id/nav_capsule_list"
         android:name="com.ideasapp.lovetimecapsule.presentation.ListCapsuleFragment"
-        android:label="ListCapsuleFragment" >
-        <action
-            android:id="@+id/action_listCapsuleFragment_to_addCapsuleFragment"
-            app:destination="@id/addCapsuleFragment" />
-        <action
-            android:id="@+id/action_listCapsuleFragment_to_showCapsuleFragment"
-            app:destination="@id/showCapsuleFragment" />
-    </fragment>
+        android:label="@string/list" />
+
+    <!-- Add Capsule Fragment -->
     <fragment
-        android:id="@+id/showCapsuleFragment"
+        android:id="@+id/nav_add_capsule"
+        android:name="com.ideasapp.lovetimecapsule.presentation.AddCapsuleFragment"
+        android:label="@string/add_capsule" />
+
+    <!-- Show Capsule Fragment -->
+    <fragment
+        android:id="@+id/show_capsule"
         android:name="com.ideasapp.lovetimecapsule.presentation.ShowCapsuleFragment"
-        android:label="ShowCapsuleFragment" >
-        <action
-            android:id="@+id/action_showCapsuleFragment_to_listCapsuleFragment"
-            app:destination="@id/listCapsuleFragment" />
-        <action
-            android:id="@+id/action_showCapsuleFragment_to_addCapsuleFragment"
-            app:destination="@id/addCapsuleFragment" />
-    </fragment>
+        android:label="@string/opened_capsule" />
 </navigation>

@@ -6,40 +6,31 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.NavController
+import androidx.navigation.fragment.NavHostFragment
 import com.ideasapp.lovetimecapsule.R
 import com.ideasapp.lovetimecapsule.databinding.ActivityMainBinding
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.ui.NavigationUI
+import com.google.android.material.bottomnavigation.BottomNavigationView
+
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
+    private lateinit var navController: NavController
 
-    override fun onCreate(savedInstanceState:Bundle?) {
+    override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val viewModel = ViewModelProvider(this)[MainViewModel::class.java]
         binding = ActivityMainBinding.inflate(layoutInflater)
         enableEdgeToEdge()
-        setContentView(R.layout.activity_main)
-    }
+        setContentView(binding.root)
 
-    private fun launchAddFragment() {
-        supportFragmentManager.beginTransaction()
-            .add(R.id.main_container,  AddCapsuleFragment())
-            .addToBackStack(null)
-            .commit()
-    }
+        val navHostFragment = supportFragmentManager
+            .findFragmentById(R.id.main_container) as NavHostFragment
+        navController = navHostFragment.navController
 
-    private fun launchListFragment() {
-        supportFragmentManager.beginTransaction()
-            .add(R.id.addCapsuleFragment,  ListCapsuleFragment())
-            .addToBackStack(null)
-            .commit()
-    }
-
-    private fun launchShowFragment() {
-        supportFragmentManager.beginTransaction()
-            .add(R.id.addCapsuleFragment,  ShowCapsuleFragment())
-            .addToBackStack(null)
-            .commit()
+        val bottomNavigationView: BottomNavigationView = binding.bottomNavigation
+        NavigationUI.setupWithNavController(bottomNavigationView, navController)
     }
 }

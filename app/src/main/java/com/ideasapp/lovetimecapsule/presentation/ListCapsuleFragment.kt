@@ -1,6 +1,7 @@
 package com.ideasapp.lovetimecapsule.presentation
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -24,12 +25,14 @@ class ListCapsuleFragment : Fragment() {
 
     override fun onCreate(savedInstanceState:Bundle?) {
         super.onCreate(savedInstanceState)
+        Log.d("Navigation", "ListCapsuleFragment")
     }
 
     override fun onCreateView(
         inflater:LayoutInflater,container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+
         val view = inflater.inflate(R.layout.list_capsule_fragment, container, false)
 
         val recyclerView = view.findViewById<RecyclerView>(R.id.recyclerView)
