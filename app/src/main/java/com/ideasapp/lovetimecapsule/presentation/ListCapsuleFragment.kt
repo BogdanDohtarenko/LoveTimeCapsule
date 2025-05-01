@@ -32,15 +32,13 @@ class ListCapsuleFragment : Fragment() {
         inflater:LayoutInflater,container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-
-        val view = inflater.inflate(R.layout.list_capsule_fragment, container, false)
-
-        val recyclerView = view.findViewById<RecyclerView>(R.id.recyclerView)
+        _binding = ListCapsuleFragmentBinding.inflate(inflater, container, false)
+        
+        val recyclerView = binding.recyclerView
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
-        val adapter = CapsuleListAdapter(viewModel.getSampleData()) //TODO
+        val adapter = CapsuleListAdapter(viewModel.getSampleData())
         recyclerView.adapter = adapter
 
-        _binding = ListCapsuleFragmentBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -48,11 +46,4 @@ class ListCapsuleFragment : Fragment() {
         super.onDestroyView()
         _binding = null
     }
-
-    companion object {
-        fun newInstance(): ListCapsuleFragment {
-            return ListCapsuleFragment()
-        }
-    }
-
 }
