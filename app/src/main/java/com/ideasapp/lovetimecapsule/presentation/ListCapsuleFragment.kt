@@ -8,9 +8,6 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import com.ideasapp.lovetimecapsule.R
-import com.ideasapp.lovetimecapsule.databinding.AddCapsuleFragmentBinding
 import com.ideasapp.lovetimecapsule.databinding.ListCapsuleFragmentBinding
 
 class ListCapsuleFragment : Fragment() {
