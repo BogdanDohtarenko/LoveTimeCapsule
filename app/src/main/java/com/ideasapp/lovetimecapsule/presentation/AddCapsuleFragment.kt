@@ -8,6 +8,8 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.ideasapp.lovetimecapsule.databinding.AddCapsuleFragmentBinding
+import com.ideasapp.lovetimecapsule.domain.Capsule
+import java.time.format.DateTimeFormatter
 
 class AddCapsuleFragment: Fragment() {
 
@@ -35,10 +37,23 @@ class AddCapsuleFragment: Fragment() {
 
     override fun onViewCreated(view:View,savedInstanceState:Bundle?) {
         super.onViewCreated(view,savedInstanceState)
-        //TODO
-        val year =  binding.datePicker.year
-        val month =  binding.datePicker.month
-        val day =  binding.datePicker.dayOfMonth
+
+        binding.saveButton.setOnClickListener {
+            val year =  binding.datePicker.year
+            val month =  binding.datePicker.month
+            val day =  binding.datePicker.dayOfMonth
+            val text = binding.textInput.text
+            val sendingTime = System.currentTimeMillis()
+
+            val DateTimeFormatter
+
+            val newCapsule = Capsule(
+                writingTime = sendingTime,
+                scheduledTime =
+            )
+
+            viewModel.saveCapsule(newCapsule)
+        }
     }
 
     override fun onDestroyView() {

@@ -36,7 +36,7 @@ class ListCapsuleFragment : Fragment() {
         
         val recyclerView = binding.recyclerView
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
-        val adapter = CapsuleListAdapter(viewModel.getSampleData())
+        val adapter = CapsuleListAdapter(viewModel.capsuleList.value?.toList() ?: listOf())
         recyclerView.adapter = adapter
 
         return binding.root
