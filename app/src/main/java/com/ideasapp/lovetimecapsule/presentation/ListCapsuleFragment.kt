@@ -16,6 +16,8 @@ class ListCapsuleFragment : Fragment() {
     private val binding:ListCapsuleFragmentBinding
         get() = _binding ?: throw RuntimeException("FragmentChooseLevelBinding don't allow here")
 
+    private lateinit var adapter: CapsuleListAdapter
+
     private val viewModel by lazy {
         ViewModelProvider(requireActivity())[MainViewModel::class.java]
     }
@@ -30,14 +32,26 @@ class ListCapsuleFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = ListCapsuleFragmentBinding.inflate(inflater, container, false)
-        
-        val recyclerView = binding.recyclerView
-        recyclerView.layoutManager = LinearLayoutManager(requireContext())
-        val adapter = CapsuleListAdapter(viewModel.capsuleList.value?.toList() ?: listOf())
-        recyclerView.adapter = adapter
+
+        setupRecyclerView()
+        observeViewModel()
 
         return binding.root
     }
+
+    private fun setupRecyclerView() {
+        val recyclerView = binding.recyclerView
+        recyclerView.layoutManager = LinearLayoutManager(requireContext())
+        adapter = CapsuleListAdapter()
+        recyclerView.adapter = adapter
+    }
+
+    private fun observeViewModel() {
+        viewModel.capsuleList.observe(viewLifecycleOwner) { capsules ->
+            adapter.items = capsules
+        }
+    }
+
 
     override fun onDestroyView() {
         super.onDestroyView()

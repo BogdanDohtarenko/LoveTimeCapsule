@@ -51,6 +51,7 @@ class AddCapsuleFragment: Fragment() {
             val scheduledDateLong = scheduledDate.toEpochDay()
 
             val newCapsule = Capsule(
+                id = System.currentTimeMillis().toInt(), //TODO amend
                 writingTime = sendingTime,
                 scheduledTime = scheduledDateLong,
                 text = text

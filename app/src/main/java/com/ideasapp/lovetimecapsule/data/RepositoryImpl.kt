@@ -10,11 +10,11 @@ object RepositoryImpl: Repository {
 
     override fun listCapsule():List<Capsule> {
         //TODO("Not yet implemented")
-        return listOf(Capsule(2, 1, ""), Capsule(3, 1, ""))
+        return listOf(Capsule(0, 2,1, ""), Capsule(1, 1,2, ""))
     }
 
     override fun showCapsule():Capsule {
         //TODO("Not yet implemented")
-        return Capsule(2, 1, "")
+        return Capsule(2, 1, 2,"")
     }
 }
