@@ -5,6 +5,6 @@ import java.util.Locale
 
 fun Long.toTimeDateString(): String {
     val dateTime = java.util.Date(this)
-    val format = SimpleDateFormat("HH:mm:ss dd/MM/yyyy", Locale.US)
+    val format = SimpleDateFormat("dd/MM/yyyy", Locale.US)
     return format.format(dateTime)
 }

@@ -11,6 +11,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.ideasapp.lovetimecapsule.databinding.AddCapsuleFragmentBinding
 import com.ideasapp.lovetimecapsule.domain.Capsule
 import java.time.LocalDate
+import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
 class AddCapsuleFragment: Fragment() {
@@ -48,12 +49,15 @@ class AddCapsuleFragment: Fragment() {
             val sendingTime = System.currentTimeMillis()
 
             val scheduledDate = LocalDate.of(year, month, day)
-            val scheduledDateLong = scheduledDate.toEpochDay()
+            val scheduledTimeMillis = scheduledDate
+                .atStartOfDay(ZoneId.systemDefault())
+                .toInstant()
+                .toEpochMilli()
 
             val newCapsule = Capsule(
                 id = System.currentTimeMillis().toInt(), //TODO amend
                 writingTime = sendingTime,
-                scheduledTime = scheduledDateLong,
+                scheduledTime = scheduledTimeMillis,
                 text = text
             )
 
