@@ -1,20 +1,26 @@
 package com.ideasapp.lovetimecapsule.data
 
+import android.app.Application
 import com.ideasapp.lovetimecapsule.domain.Capsule
 import com.ideasapp.lovetimecapsule.domain.Repository
 
-object RepositoryImpl: Repository {
-    override fun addCapsule(newCapsule:Capsule) {
-        //TODO("Not yet implemented")
+class RepositoryImpl(application: Application): Repository {
+
+    private val dao = AppDatabase.getInstance(application).CapsuleDao()
+
+    override fun addCapsule(newCapsule: Capsule) {
+        val dbModel = CapsuleMapper.mapEntityToDbModel(capsule = newCapsule)
+        dao.addCapsule(dbModel)
     }
 
     override fun listCapsule():List<Capsule> {
-        //TODO("Not yet implemented")
-        return listOf(Capsule(0, 2,1, ""), Capsule(1, 1,2, ""))
+        val dbModelList = dao.getCapsuleList()
+        val entityList = dbModelList.map { CapsuleMapper.mapDbModelToEntity(it) }
+        return entityList
     }
 
     override fun showCapsule():Capsule {
-        //TODO("Not yet implemented")
+
         return Capsule(2, 1, 2,"")
     }
 }
