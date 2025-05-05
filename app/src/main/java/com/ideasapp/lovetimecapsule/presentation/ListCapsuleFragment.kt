@@ -19,7 +19,7 @@ class ListCapsuleFragment : Fragment() {
     private lateinit var adapter: CapsuleListAdapter
 
     private val viewModel by lazy {
-        ViewModelProvider(requireActivity())[MainViewModel::class.java]
+        ViewModelProvider(requireActivity(), MainViewModelFactory(requireActivity().application))[MainViewModel::class.java]
     }
 
     override fun onCreate(savedInstanceState:Bundle?) {

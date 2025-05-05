@@ -20,7 +20,6 @@ class RepositoryImpl(application: Application): Repository {
     }
 
     override fun showCapsule():Capsule {
-
         return Capsule(2, 1, 2,"")
     }
 }

@@ -21,7 +21,7 @@ class AddCapsuleFragment: Fragment() {
         get() = _binding ?: throw RuntimeException("FragmentChooseLevelBinding don't allow here")
 
     private val viewModel by lazy {
-        ViewModelProvider(requireActivity())[MainViewModel::class.java]
+        ViewModelProvider(requireActivity(), MainViewModelFactory(requireActivity().application))[MainViewModel::class.java]
     }
 
     override fun onCreate(savedInstanceState:Bundle?) {

@@ -1,5 +1,7 @@
 package com.ideasapp.lovetimecapsule.presentation
 
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -8,9 +10,9 @@ import com.ideasapp.lovetimecapsule.domain.Capsule
 import com.ideasapp.lovetimecapsule.domain.ListCapsuleUseCase
 import com.ideasapp.lovetimecapsule.domain.ShowCapsuleUseCase
 
-class MainViewModel: ViewModel() {
+class MainViewModel(application: Application): AndroidViewModel(application) {
 
-    private val repository = com.ideasapp.lovetimecapsule.data.RepositoryImpl
+    private val repository = com.ideasapp.lovetimecapsule.data.RepositoryImpl(application)
     private val addCapsuleUseCase = AddCapsuleUseCase(repository)
     private val listCapsuleUseCase = ListCapsuleUseCase(repository)
     private val showCapsuleUseCase = ShowCapsuleUseCase(repository)
