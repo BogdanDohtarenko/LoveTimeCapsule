@@ -3,22 +3,29 @@ package com.ideasapp.lovetimecapsule.data
 import android.app.Application
 import com.ideasapp.lovetimecapsule.domain.Capsule
 import com.ideasapp.lovetimecapsule.domain.Repository
+import io.reactivex.rxjava3.core.Completable
+import io.reactivex.rxjava3.core.Single
+import io.reactivex.rxjava3.schedulers.Schedulers
 
 class RepositoryImpl(application: Application): Repository {
 
     private val dao = AppDatabase.getInstance(application).CapsuleDao()
 
-    override fun addCapsule(newCapsule: Capsule) {
-        val dbModel = CapsuleMapper.mapEntityToDbModel(capsule = newCapsule)
-        dao.addCapsule(dbModel)
+    override fun saveCapsule(newCapsule: Capsule): Completable {
+        val capsuleDbModel = CapsuleMapper.mapEntityToDbModel(newCapsule)
+        return dao.addCapsule(capsuleDbModel) // Save to the database
+            .subscribeOn(Schedulers.io()) // Run the query on the IO scheduler
+            .observeOn(AndroidSchedulers.mainThread()) // Observe completion on the main thread
     }
 
-    override fun listCapsule():List<Capsule> {
-        val dbModelList = dao.getCapsuleList()
-        val entityList = dbModelList.map { CapsuleMapper.mapDbModelToEntity(it) }
-        return entityList
+    override fun listCapsule(): Single<List<Capsule>> {
+        return dao.getCapsuleList()
+            .map { dbModelList ->
+                dbModelList.map { CapsuleMapper.mapDbModelToEntity(it) }
+            }
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
     }
-
     override fun showCapsule():Capsule {
         return Capsule(2, 1, 2,"")
     }
