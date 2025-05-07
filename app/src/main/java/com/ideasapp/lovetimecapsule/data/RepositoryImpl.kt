@@ -15,7 +15,6 @@ class RepositoryImpl(application: Application): Repository {
         val capsuleDbModel = CapsuleMapper.mapEntityToDbModel(newCapsule)
         return dao.addCapsule(capsuleDbModel) // Save to the database
             .subscribeOn(Schedulers.io()) // Run the query on the IO scheduler
-            .observeOn(AndroidSchedulers.mainThread()) // Observe completion on the main thread
     }
 
     override fun listCapsule(): Single<List<Capsule>> {
@@ -24,8 +23,8 @@ class RepositoryImpl(application: Application): Repository {
                 dbModelList.map { CapsuleMapper.mapDbModelToEntity(it) }
             }
             .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
     }
+
     override fun showCapsule():Capsule {
         return Capsule(2, 1, 2,"")
     }
