@@ -1,11 +1,16 @@
 package com.ideasapp.lovetimecapsule.presentation
 
+import android.app.AlarmManager
 import android.app.Application
+import android.app.PendingIntent
+import android.content.Context
+import android.content.Intent
+import android.os.Build
 import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import com.ideasapp.lovetimecapsule.domain.AddCapsuleUseCase
 import com.ideasapp.lovetimecapsule.domain.Capsule
 import com.ideasapp.lovetimecapsule.domain.ListCapsuleUseCase
@@ -25,11 +30,12 @@ class MainViewModel(application: Application): AndroidViewModel(application) {
     val capsuleList: LiveData<List<Capsule>>
         get() = _capsuleList
 
-    private val _capsuleOpened = MutableLiveData<Capsule?>(null)
-    val capsuleOpened: LiveData<Capsule?>
+    private val _capsuleOpened = MutableLiveData<String?>(null)
+    val capsuleOpened: LiveData<String?>
         get() = _capsuleOpened
 
     private val disposables = CompositeDisposable()
+    private val alarmManager = application.getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
     init {
         val disposable = listCapsuleUseCase.invoke()
@@ -42,6 +48,7 @@ class MainViewModel(application: Application): AndroidViewModel(application) {
         disposables.add(disposable)
     }
 
+    @RequiresApi(Build.VERSION_CODES.S)
     fun saveCapsule(newCapsule: Capsule) {
         val oldList = capsuleList.value?.toMutableList() ?: mutableListOf()
         _capsuleList.value = (oldList + newCapsule).toList()
@@ -50,9 +57,52 @@ class MainViewModel(application: Application): AndroidViewModel(application) {
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
-                { Log.d("MainViewModel", "Capsule saved successfully") },
+                {
+                    Log.d("MainViewModel", "Capsule saved successfully")
+                    scheduleCapsuleOpening(newCapsule)
+                },
                 { error -> Log.e("MainViewModel", "Error saving capsule", error) }
             )
         disposables.add(disposable)
     }
+
+    @RequiresApi(Build.VERSION_CODES.S)
+    private fun scheduleCapsuleOpening(capsule: Capsule) {
+        try {
+            if (alarmManager.canScheduleExactAlarms()) {
+                val intent = Intent(getApplication(), CapsuleReceiver::class.java).apply {
+                    putExtra("capsule_id", capsule.id)
+                    putExtra("capsule_text", capsule.text)
+                }
+
+                val pendingIntent = PendingIntent.getBroadcast(
+                    getApplication(),
+                    capsule.id,
+                    intent,
+                    PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+                )
+
+                alarmManager.setExactAndAllowWhileIdle(
+                    AlarmManager.RTC_WAKEUP,
+                    capsule.scheduledTime,
+                    pendingIntent
+                )
+                Log.d("MainViewModel", "Capsule opening scheduled for: ${capsule.scheduledTime}")
+            } else {
+                Log.e("MainViewModel", "Cannot schedule exact alarms. Permission not granted.")
+            }
+        } catch (e: SecurityException) {
+            Log.e("MainViewModel", "Failed to schedule exact alarm due to security exception", e)
+        }
+    }
+
+    fun openCapsule(capsule: String) {
+        _capsuleOpened.value = capsule
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        disposables.clear()
+    }
+
 }

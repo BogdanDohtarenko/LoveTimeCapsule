@@ -1,6 +1,14 @@
 package com.ideasapp.lovetimecapsule.presentation
 
+import android.Manifest
+import android.app.AlarmManager
+import android.content.Context
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
+import android.util.Log
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -22,6 +30,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        requestPermissionsIfNecessary()
         binding = ActivityMainBinding.inflate(layoutInflater)
         enableEdgeToEdge()
         setContentView(binding.root)
@@ -32,5 +41,54 @@ class MainActivity : AppCompatActivity() {
 
         val bottomNavigationView: BottomNavigationView = binding.bottomNavigation
         NavigationUI.setupWithNavController(bottomNavigationView, navController)
+    }
+
+    private fun requestPermissionsIfNecessary() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) { // Android 13+
+            val permissionsToRequest = mutableListOf<String>()
+
+            // Check notifications permission
+            if (checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+                permissionsToRequest.add(Manifest.permission.POST_NOTIFICATIONS)
+            }
+
+            // Check exact alarm permission
+            val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && !alarmManager.canScheduleExactAlarms()) {
+                val intent = Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM)
+                startActivity(intent)
+            }
+
+            // Request permissions if needed
+            if (permissionsToRequest.isNotEmpty()) {
+                requestPermissions(permissionsToRequest.toTypedArray(), REQUEST_POST_NOTIFICATIONS_PERMISSION)
+            }
+        }
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == REQUEST_POST_NOTIFICATIONS_PERMISSION) {
+            // Handle permissions result
+            for (i in permissions.indices) {
+                when (permissions[i]) {
+                    Manifest.permission.POST_NOTIFICATIONS -> {
+                        if (grantResults[i] == PackageManager.PERMISSION_GRANTED) {
+                            Log.d("MainActivity", "Notification permission granted.")
+                        } else {
+                            Log.d("MainActivity", "Notification permission denied.")
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    companion object {
+        private const val REQUEST_POST_NOTIFICATIONS_PERMISSION = 1
     }
 }
