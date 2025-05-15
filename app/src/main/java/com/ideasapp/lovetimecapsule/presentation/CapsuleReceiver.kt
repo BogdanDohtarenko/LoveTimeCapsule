@@ -8,19 +8,22 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import androidx.core.app.NotificationCompat
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.ideasapp.lovetimecapsule.R
 
 class CapsuleReceiver : BroadcastReceiver() {
 
-    override fun onReceive(context: Context, intent:Intent) {
+    override fun onReceive(context: Context, intent: Intent) {
         val capsuleId = intent.getIntExtra("capsule_id", 0)
         val capsuleText = intent.getStringExtra("capsule_text") ?: ""
 
         val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         val channelId = "capsule_channel"
 
-        val channel = NotificationChannel(channelId,"Capsule Notifications",NotificationManager.IMPORTANCE_HIGH)
-        notificationManager.createNotificationChannel(channel)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val channel = NotificationChannel(channelId, "Capsule Notifications", NotificationManager.IMPORTANCE_HIGH)
+            notificationManager.createNotificationChannel(channel)
+        }
 
         val notificationIntent = Intent(context, MainActivity::class.java)
         val pendingIntent = PendingIntent.getActivity(
@@ -39,7 +42,14 @@ class CapsuleReceiver : BroadcastReceiver() {
             .setAutoCancel(true)
             .build()
         notificationManager.notify(capsuleId, notification)
+
         saveCapsuleText(context, capsuleText)
+
+        val deleteIntent = Intent("com.ideasapp.lovetimecapsule.DELETE_CAPSULE").apply {
+            putExtra("capsule_id", capsuleId)
+            putExtra("capsule_text", capsuleText)
+        }
+        LocalBroadcastManager.getInstance(context).sendBroadcast(deleteIntent)
     }
 
     private fun saveCapsuleText(context: Context, text: String) {

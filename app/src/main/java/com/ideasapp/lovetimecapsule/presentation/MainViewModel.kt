@@ -91,7 +91,6 @@ class MainViewModel(application: Application): AndroidViewModel(application) {
                     capsule.scheduledTime,
                     pendingIntent
                 )
-                openCapsule(capsule = capsule.text)
                 Log.d("MainViewModel", "Capsule opening scheduled for: ${capsule.scheduledTime}")
             } else {
                 Log.e("MainViewModel", "Cannot schedule exact alarms. Permission not granted.")

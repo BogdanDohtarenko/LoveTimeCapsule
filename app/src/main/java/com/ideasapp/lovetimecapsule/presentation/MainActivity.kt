@@ -5,23 +5,23 @@ import android.app.AlarmManager
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
 import android.util.Log
 import androidx.activity.enableEdgeToEdge
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.ViewModelProvider
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
-import com.ideasapp.lovetimecapsule.R
-import com.ideasapp.lovetimecapsule.databinding.ActivityMainBinding
-import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.NavigationUI
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.ideasapp.lovetimecapsule.R
+import com.ideasapp.lovetimecapsule.databinding.ActivityMainBinding
 
 
 class MainActivity : AppCompatActivity() {
@@ -33,14 +33,19 @@ class MainActivity : AppCompatActivity() {
         ViewModelProvider(this, MainViewModelFactory(this.application))[MainViewModel::class.java]
     }
 
-    private val capsuleReceiver = object : BroadcastReceiver() {
+    private val capsuleBroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
-            val capsuleText = intent.getStringExtra("capsule_text") ?: ""
-            viewModel.deleteCapsule(capsuleText)
-            viewModel.openCapsule(capsuleText)
+            if (intent.action == "com.ideasapp.lovetimecapsule.DELETE_CAPSULE") {
+                val capsuleText = intent.getStringExtra("capsule_text") ?: return
+                viewModel.openCapsule(capsuleText)
+                Log.d("MainActivity", "openCapsule: $capsuleText")
+                viewModel.deleteCapsule(capsuleText)
+                Log.d("MainActivity", "Capsule deleted after notification: $capsuleText")
+            }
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         requestPermissionsIfNecessary()
@@ -54,6 +59,9 @@ class MainActivity : AppCompatActivity() {
 
         val bottomNavigationView: BottomNavigationView = binding.bottomNavigation
         NavigationUI.setupWithNavController(bottomNavigationView, navController)
+
+        val filter = IntentFilter("com.ideasapp.lovetimecapsule.DELETE_CAPSULE")
+        LocalBroadcastManager.getInstance(this).registerReceiver(capsuleBroadcastReceiver, filter)
     }
 
     private fun requestPermissionsIfNecessary() {
@@ -92,6 +100,11 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        unregisterReceiver(capsuleBroadcastReceiver)
     }
 
     companion object {
