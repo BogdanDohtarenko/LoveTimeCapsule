@@ -6,5 +6,5 @@ import io.reactivex.rxjava3.core.Single
 interface Repository {
     fun saveCapsule(newCapsule:Capsule): Completable
     fun listCapsule():Single<List<Capsule>>
-    fun showCapsule(): Capsule
+    fun deleteCapsule(capsuleId: Int): Completable
 }

@@ -2,6 +2,7 @@ package com.ideasapp.lovetimecapsule.presentation
 
 import android.Manifest
 import android.app.AlarmManager
+import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -28,6 +29,18 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private lateinit var navController: NavController
 
+    private val viewModel by lazy {
+        ViewModelProvider(this, MainViewModelFactory(this.application))[MainViewModel::class.java]
+    }
+
+    private val capsuleReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context, intent: Intent) {
+            val capsuleText = intent.getStringExtra("capsule_text") ?: ""
+            viewModel.deleteCapsule(capsuleText)
+            viewModel.openCapsule(capsuleText)
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         requestPermissionsIfNecessary()
@@ -44,22 +57,16 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun requestPermissionsIfNecessary() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) { // Android 13+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             val permissionsToRequest = mutableListOf<String>()
-
-            // Check notifications permission
             if (checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
                 permissionsToRequest.add(Manifest.permission.POST_NOTIFICATIONS)
             }
-
-            // Check exact alarm permission
             val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && !alarmManager.canScheduleExactAlarms()) {
                 val intent = Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM)
                 startActivity(intent)
             }
-
-            // Request permissions if needed
             if (permissionsToRequest.isNotEmpty()) {
                 requestPermissions(permissionsToRequest.toTypedArray(), REQUEST_POST_NOTIFICATIONS_PERMISSION)
             }
@@ -73,7 +80,6 @@ class MainActivity : AppCompatActivity() {
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == REQUEST_POST_NOTIFICATIONS_PERMISSION) {
-            // Handle permissions result
             for (i in permissions.indices) {
                 when (permissions[i]) {
                     Manifest.permission.POST_NOTIFICATIONS -> {

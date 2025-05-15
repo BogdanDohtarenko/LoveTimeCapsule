@@ -25,7 +25,7 @@ class RepositoryImpl(application: Application): Repository {
             .subscribeOn(Schedulers.io())
     }
 
-    override fun showCapsule():Capsule {
-        return Capsule(2, 1, 2,"")
+    override fun deleteCapsule(capsuleId: Int): Completable {
+        return dao.deleteCapsule(capsuleId).subscribeOn(Schedulers.io())
     }
 }

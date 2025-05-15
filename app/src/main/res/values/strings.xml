@@ -5,4 +5,5 @@
     <string name="list">List</string>
     <string name="enter_text">Enter text please</string>
     <string name="save_capsule">Save capsule</string>
+    <string name="your_currently_opened_capsule">Your currently opened capsule</string>
 </resources>

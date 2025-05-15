@@ -14,7 +14,7 @@ import androidx.lifecycle.MutableLiveData
 import com.ideasapp.lovetimecapsule.domain.AddCapsuleUseCase
 import com.ideasapp.lovetimecapsule.domain.Capsule
 import com.ideasapp.lovetimecapsule.domain.ListCapsuleUseCase
-import com.ideasapp.lovetimecapsule.domain.ShowCapsuleUseCase
+import com.ideasapp.lovetimecapsule.domain.DeleteCapsuleUseCase
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.schedulers.Schedulers
@@ -24,13 +24,17 @@ class MainViewModel(application: Application): AndroidViewModel(application) {
     private val repository = com.ideasapp.lovetimecapsule.data.RepositoryImpl(application)
     private val addCapsuleUseCase = AddCapsuleUseCase(repository)
     private val listCapsuleUseCase = ListCapsuleUseCase(repository)
-    private val showCapsuleUseCase = ShowCapsuleUseCase(repository)
+    private val deleteCapsuleUseCase = DeleteCapsuleUseCase(repository)
 
     private val _capsuleList = MutableLiveData<List<Capsule>>(mutableListOf())
     val capsuleList: LiveData<List<Capsule>>
         get() = _capsuleList
 
-    private val _capsuleOpened = MutableLiveData<String?>(null)
+    private val sharedPreferences by lazy {
+        application.getSharedPreferences(CapsuleReceiver.SHARED_PREF_FILE, Context.MODE_PRIVATE)
+    }
+
+    private val _capsuleOpened = MutableLiveData<String?>(sharedPreferences.getString(CapsuleReceiver.CAPSULE_TEXT_KEY, ""))
     val capsuleOpened: LiveData<String?>
         get() = _capsuleOpened
 
@@ -87,6 +91,7 @@ class MainViewModel(application: Application): AndroidViewModel(application) {
                     capsule.scheduledTime,
                     pendingIntent
                 )
+                openCapsule(capsule = capsule.text)
                 Log.d("MainViewModel", "Capsule opening scheduled for: ${capsule.scheduledTime}")
             } else {
                 Log.e("MainViewModel", "Cannot schedule exact alarms. Permission not granted.")
@@ -94,6 +99,20 @@ class MainViewModel(application: Application): AndroidViewModel(application) {
         } catch (e: SecurityException) {
             Log.e("MainViewModel", "Failed to schedule exact alarm due to security exception", e)
         }
+    }
+
+    fun deleteCapsule(oldCapsuleText: String) {
+        val oldList = capsuleList.value?.toMutableList() ?: mutableListOf()
+        val oldCapsule = oldList.find { it.text == oldCapsuleText } ?: throw RuntimeException("Unknown capsule trying to open")
+        _capsuleList.value = (oldList - oldCapsule).toList()
+        val disposable = deleteCapsuleUseCase.invoke(capsuleId = oldCapsule.id)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(
+                { Log.d("MainViewModel", "Capsule deleted successfully") },
+                { error -> Log.e("MainViewModel", "Error deleted capsule", error) }
+            )
+        disposables.add(disposable)
     }
 
     fun openCapsule(capsule: String) {

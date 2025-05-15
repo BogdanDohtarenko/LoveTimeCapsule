@@ -35,7 +35,7 @@ class ShowCapsuleFragment: Fragment() {
 
     override fun onViewCreated(view:View,savedInstanceState:Bundle?) {
         super.onViewCreated(view,savedInstanceState)
-        binding.textView.text = viewModel.capsuleOpened.value?.text ?: ""
+        binding.textView.text = viewModel.capsuleOpened.value ?: ""
     }
 
     override fun onDestroyView() {
