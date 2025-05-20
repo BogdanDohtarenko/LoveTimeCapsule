@@ -42,6 +42,7 @@ class MainViewModel(application: Application): AndroidViewModel(application) {
     private val alarmManager = application.getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
     init {
+        //deleting
         val disposable = listCapsuleUseCase.invoke()
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
