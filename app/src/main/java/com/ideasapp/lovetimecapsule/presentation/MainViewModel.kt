@@ -42,12 +42,16 @@ class MainViewModel(application: Application): AndroidViewModel(application) {
     private val alarmManager = application.getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
     init {
-        deleteCapsule(capsuleOpened.value ?: "")
+        Log.d("MainViewModel", "capsuleOpened: ${capsuleOpened.value}")
         val disposable = listCapsuleUseCase.invoke()
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
-                { capsules -> _capsuleList.value = capsules },
+                {
+                    capsules -> _capsuleList.value = capsules
+                    Log.d("MainViewModel", "_capsuleList: ${_capsuleList.value}")
+                    deleteCapsule(capsuleOpened.value ?: "")
+                },
                 { error -> Log.e("MainViewModel", "Error fetching capsules", error) }
             )
         disposables.add(disposable)
@@ -102,8 +106,11 @@ class MainViewModel(application: Application): AndroidViewModel(application) {
     }
 
     fun deleteCapsule(oldCapsuleText: String) {
+        Log.d("MainViewModel", "deleteCapsule: $oldCapsuleText")
         val oldList = capsuleList.value?.toMutableList() ?: mutableListOf()
+        Log.d("MainViewModel", "oldList: $oldList")
         val oldCapsule = oldList.find { it.text == oldCapsuleText } ?: return
+        Log.d("MainViewModel", "oldCapsule: $oldCapsule")
         _capsuleList.value = (oldList - oldCapsule).toList()
         val disposable = deleteCapsuleUseCase.invoke(capsuleId = oldCapsule.id)
             .subscribeOn(Schedulers.io())
