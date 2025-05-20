@@ -42,7 +42,7 @@ class MainViewModel(application: Application): AndroidViewModel(application) {
     private val alarmManager = application.getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
     init {
-        //deleting
+        deleteCapsule(capsuleOpened.value ?: "")
         val disposable = listCapsuleUseCase.invoke()
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
@@ -103,7 +103,7 @@ class MainViewModel(application: Application): AndroidViewModel(application) {
 
     fun deleteCapsule(oldCapsuleText: String) {
         val oldList = capsuleList.value?.toMutableList() ?: mutableListOf()
-        val oldCapsule = oldList.find { it.text == oldCapsuleText } ?: throw RuntimeException("Unknown capsule trying to open")
+        val oldCapsule = oldList.find { it.text == oldCapsuleText } ?: return
         _capsuleList.value = (oldList - oldCapsule).toList()
         val disposable = deleteCapsuleUseCase.invoke(capsuleId = oldCapsule.id)
             .subscribeOn(Schedulers.io())
