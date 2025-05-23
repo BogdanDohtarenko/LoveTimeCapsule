@@ -62,6 +62,8 @@ class MainActivity : AppCompatActivity() {
 
         val filter = IntentFilter("com.ideasapp.lovetimecapsule.DELETE_CAPSULE")
         LocalBroadcastManager.getInstance(this).registerReceiver(capsuleBroadcastReceiver, filter)
+
+        checkAndRequestBatteryOptimizationExclusion()
     }
 
     private fun requestPermissionsIfNecessary() {
@@ -98,6 +100,22 @@ class MainActivity : AppCompatActivity() {
                         }
                     }
                 }
+            }
+        }
+    }
+
+    private fun checkAndRequestBatteryOptimizationExclusion() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            val powerManager = getSystemService(Context.POWER_SERVICE) as android.os.PowerManager
+            val packageName = packageName
+
+            // Check if the app is already excluded from battery optimization
+            if (!powerManager.isIgnoringBatteryOptimizations(packageName)) {
+                // If not, request to exclude the app
+                val intent = Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS)
+                startActivity(intent)
+            } else {
+                Log.d("MainActivity", "App is already excluded from battery optimization.")
             }
         }
     }

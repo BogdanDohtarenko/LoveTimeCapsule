@@ -1,11 +1,13 @@
 package com.ideasapp.lovetimecapsule.presentation
 
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.ideasapp.lovetimecapsule.databinding.AddCapsuleFragmentBinding
@@ -38,6 +40,7 @@ class AddCapsuleFragment: Fragment() {
         return binding.root
     }
 
+    @RequiresApi(Build.VERSION_CODES.S)
     override fun onViewCreated(view:View,savedInstanceState:Bundle?) {
         super.onViewCreated(view,savedInstanceState)
 
@@ -49,13 +52,13 @@ class AddCapsuleFragment: Fragment() {
             val sendingTime = System.currentTimeMillis()
 
             val scheduledDate = LocalDate.of(year, month, day)
+
             val scheduledTimeMillis = scheduledDate
                 .atStartOfDay(ZoneId.systemDefault())
                 .toInstant()
                 .toEpochMilli()
 
             val newCapsule = Capsule(
-                id = System.currentTimeMillis().toInt(), //TODO amend
                 writingTime = sendingTime,
                 scheduledTime = scheduledTimeMillis,
                 text = text
